@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>登录</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+	<link rel="stylesheet" type="text/css" href="css/login.css"/>
+	<link rel="stylesheet" type="text/css" href="css/header.css"/>
+	<link rel="stylesheet" type="text/css" href="css/footer.css"/>
+</head>
+<body class="gray-bg">
+<div class="headpage"></div>
+<div class="middle-box text-center">
+	<div>
+		<h2>欢迎登录KEZI取件系统</h2>
+		<form class="m-t" role="form">
+			<div class="form-group">
+				<input type="text" id="userAccount" class="form-control" placeholder="用户名" required="">
+			</div>
+			<div class="form-group">
+				<input type="password" id="userPassword" class="form-control" placeholder="密码" required="">
+			</div>
+			<div class="form-group">
+				<label class="radio-inline">
+					<input type="radio" name="userType" id="optionsRadios1" value="0" checked> 普通用户
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="userType" id="optionsRadios2"  value="1"> 配送员
+				</label>
+			</div>
+		</form>
+		<button id="submitLogin" type="submit" class="btn btn-primary block full-width m-b" onclick="loginFunc()">登录</button>
+		<a href="userInfo.html"><small>忘记密码?</small></a>
+		<a href="register.html"><small>还没有账号?快速注册</small></a>
+	</div>
+</div>
+<div class="footpage"></div>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript">
+	$(".headpage").load("headerBefore.html");
+	$(".footpage").load("footer.html");
+	function loginFunc(){
+		var account = $('#userAccount').val();
+		var pwd = $('#userPassword').val();
+		/*if (phone == '123456' && pwd == '123'){
+            window.location.href = 'index.html';
+        }*/
+		var userType = $("input[name='userType']:checked").val();
+		console.log(userType)
+		$.ajax({
+			url: "/login",
+			method: 'post',
+			data: {
+				account: account,
+				password: pwd,
+				type: userType
+			},
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			success: function (obj, status) {
+				console.log(obj)
+				if (obj.code == 200) {
+					console.log(obj.message)
+					console.log(obj.data)
+					if (obj.data.type == 0) {
+						location.href = "index.html"
+					} else if (obj.data.type == 1) {
+						location.href = "manage.html"
+
+					}
+
+				} else {
+					alert(obj.message)
+				}
+			},
+			error: function (response) {
+				alert(response.status);
+			}
+		})
+
+	}
+</script>
+</body>
+</html>

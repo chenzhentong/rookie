@@ -1,0 +1,531 @@
+<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="css/header.css"/>
+<div id="header" class="header" style="display: flex">
+    <div class="logo" id="userLogo">
+        <a href="index.html"><img src="img/logo.png"/></a>
+        KEZI取件
+    </div>
+    <div class="logo" id="userLogo2">
+        <a href="manage.html"><img src="img/logo.png"/></a>
+        KEZI取件
+    </div>
+    <div class="navigation" style="display: flex;flex: 1">
+        <ul id="userHeader" style="flex: 1">
+            <li class="nav-item active">
+                <a class="nav-a" href="index.html">首页</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-a dropdown-toggle" data-toggle="dropdown">
+                    服务 <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">产品服务</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">客户服务</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">热门活动</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">新闻公告</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">集团采购</a></li>
+                    <li class="divider"></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-a about" href="about.html">走进KEZI</a>
+            </li>
+            <li class="nav-item">
+                <span class="nav-a " data-toggle="modal" data-target="#myModal2" onclick="getAllCities()">
+                    <img src="img/mail.png" style="width: 32px;height: 32px">
+                    <span>寄快递</span>
+                </span>
+                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">×
+                                </button>
+                                <h4 class="modal-title" id="myModalLabel2">
+                                    寄快递
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="deliveryAddress">运费计算规则:</label>
+                                    <div>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;KEZI快递运费基于重量进行计算，
+                                        首先了解几个概念，首重、首重运费、续重、续重运费，
+                                        首重：不超过一定重量按照首重运费收费，不同的省份不同。
+                                        首重运费：是固定的值，不同的省份不同。
+                                        续重：物品的总重量 - 首重。
+                                        续重运费：是固定的值，不同的省份不同。
+                                        物品重量：要寄件的物品重量。
+                                        <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        运费计算基本规则为：<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        (1)如果物品重量 < 首重， 运费 = 首重运费。<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        (2)如果物品重量 >= 首重，运费 = 首重运费+(物品重量 - 首重)×续重运费。
+                                        <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        注:<br>&nbsp;&nbsp;&nbsp;&nbsp; (1) 首重、续重单位为 kg，首重运费、续重运费单位为 元/kg。<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        (2) 首重、首重运费、运费均按照寄件城市所在省份计算。
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="goodsName2">物品名称</label>
+                                    <input type="text" class="form-control" name="goodsName2" id="goodsName2"/>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="weight2">物品重量(kg)</label>
+                                    <input type="text" class="form-control" placeholder="请输入您要寄件的重量" name="weight2"
+                                           id="weight2">
+                                </div>
+                                <div class="form-group">
+                                    <label>数量(个)</label>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="button"
+                                                            onclick="decreaseNum2()">-</button>
+                                                </span>
+                                                <input type="text" class="form-control" value="1"
+                                                       style="text-align: center" id="num2">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="button"
+                                                            onclick="increaseNum2()">+</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sentAddress2">寄件城市</label>
+                                    <select class="form-control" name="sentAddress2" id="sentAddress2">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deliveryAddress2">收件城市</label>
+                                    <select class="form-control" name="deliveryAddress2" id="deliveryAddress2">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="receiverPhone">收件人手机号</label>
+                                    <input class="form-control" name="receiverPhone" id="receiverPhone"
+                                           onblur="getUserIdByPhone()"/>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" name="receiverId" id="receiverId" type="hidden"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="freight2">运费(元)</label><br>
+                                    <span id="freight2"></span>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">关闭
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="countFreight2()">
+                                    运费估算
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="sendPackage()">
+                                    确定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <span class="nav-a " data-toggle="modal" data-target="#myModal" onclick="getAllCities()">
+                    <img src="img/freight.png" style="width: 32px;height: 32px">
+                    <span>运费估算</span>
+                </span>
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">×
+                                </button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    运费估算
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="deliveryAddress">运费估算规则:</label>
+                                    <div>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;KEZI快递运费基于重量进行计算，
+                                        首先了解几个概念，首重、首重运费、续重、续重运费，
+                                        首重：不超过一定重量按照首重运费收费，不同的省份不同。
+                                        首重运费：是固定的值，不同的省份不同。
+                                        续重：物品的总重量 - 首重。
+                                        续重运费：是固定的值，不同的省份不同。
+                                        物品重量：要寄件的物品重量。
+                                        <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        运费计算基本规则为：<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        (1)如果物品重量 < 首重， 运费 = 首重运费。<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        (2)如果物品重量 >= 首重，运费 = 首重运费+(物品重量 - 首重)×续重运费。
+                                        <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        注:<br>&nbsp;&nbsp;&nbsp;&nbsp; (1) 首重、续重单位为 kg，首重运费、续重运费单位为 元/kg。<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        (2) 首重、首重运费、运费均按照寄件城市所在省份计算。
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="weight">重量(kg)</label>
+                                    <input type="text" class="form-control" placeholder="请输入您要寄件的重量" name="weight"
+                                           id="weight">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sentAddress">寄件城市</label>
+                                    <select class="form-control" name="sentAddress" id="sentAddress">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deliveryAddress">收件城市</label>
+                                    <select class="form-control" name="deliveryAddress" id="deliveryAddress">
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">关闭
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="countFreight()">
+                                    估算
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-a " href="logistics.html">-->
+<!--                    <img src="img/IDcode.png" style="width: 32px;height: 32px">-->
+<!--                    <span>消息通知</span>-->
+<!--                </a>-->
+<!--            </li>-->
+            <li class="nav-item">
+                <a class="nav-a " href="packageList.html">
+                    <img src="img/record.png" style="width: 32px;height: 32px">
+                    <span>取/寄件记录</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" role="form" onsubmit="return false">
+                    <div class="form-group" style="margin: 14px 0;">
+                        <label class="sr-only" for="keyword">关键词</label>
+                        <input type="text" class="form-control" name="keyword" id="keyword"
+                               placeholder="请输入快递单号/手机号码/身份证号">
+                    </div>
+                    <button type="submit" class="btn btn-default" onclick="searchPackage()">搜索</button>
+                </form>
+            </li>
+
+        </ul>
+        <ul id="userHeader2" style="flex: 1">
+
+<!--            <li class="nav-item active">-->
+<!--                <a class="nav-a" href=".html">更新物流</a>-->
+<!--            </li>-->
+
+        </ul>
+        <ul class="nav navbar-nav navbar-right" id="common-navbar" style="display: flex;">
+            <li class="nav-item navbar-right" style="display:flex;">
+                <a class="navbar-link nav-link" id="userInfo" onclick="location.href='userInfo.html'"
+                   style="line-height: 40px">个人中心</a>
+                <a class="navbar-link nav-link" id="logoutBtn" style="line-height: 40px">退出</a>
+            </li>
+        </ul>
+    </div>
+    <script>
+        $('#logoutBtn').click(function () {
+            $.ajax({
+                url: "/logout",
+                method: 'get',
+                headers: {"Content-Type": "application/json"},
+                success: function (obj, status) {
+                    console.log(obj)
+                    if (obj.code == 200) {
+                        console.log(obj.message)
+                        location.href = 'login.html'
+                    } else {
+                        alert(obj.message)
+                    }
+                },
+                error: function (response) {
+                    alert(response.status);
+                }
+            })
+        })
+    </script>
+    <script>
+        function countFreight() {
+            var weight = $("#weight").val();
+            var sentAddressId = $("#sentAddress").val();
+            var deliveryAddressId = $("#deliveryAddress").val();
+            if (weight == null || weight == "") {
+                alert("请输入重量")
+                return
+            } else if (sentAddressId == null || sentAddressId == "") {
+                alert("请选择寄件地址")
+                return
+            } else if (deliveryAddressId == null || deliveryAddressId == "") {
+                alert("请选择收件地址")
+                return
+            }
+            console.log(weight)
+            console.log(sentAddressId)
+            console.log(deliveryAddressId)
+            $.ajax({
+                url: "/package/freight/count?sentAddressId=" + sentAddressId + "&deliveryAddressId=" + deliveryAddressId + "&weight=" + weight,
+                method: 'get',
+                headers: {"Content-Type": "application/json"},
+                success: function (obj, status) {
+                    console.log(obj)
+                    if (obj.code == 200) {
+                        alert(obj.message)
+
+                    } else {
+                        alert(obj.message)
+                    }
+                },
+                error: function (response) {
+                    alert(response.status);
+                }
+            })
+        }
+    </script>
+    <script>
+        function getAllCities() {
+            $.ajax({
+                url: "/city/all",
+                method: 'get',
+                headers: {"Content-Type": "application/json"},
+                success: function (obj, status) {
+                    console.log(obj)
+                    if (obj.code == 200) {
+                        // console.log(obj.data)
+
+                        obj.data.forEach(function (item, index) {
+                            console.log(item)
+                            $("#sentAddress").append("<option value='" + item.province.id + "'>" + item.province.name + "/" + item.name + "</option>");
+                            $("#deliveryAddress").append("<option value='" + item.province.id + "'>" + item.province.name + "/" + item.name + "</option>");
+                            $("#sentAddress2").append("<option value='" + item.province.id + "'>" + item.province.name + "/" + item.name + "</option>");
+                            $("#deliveryAddress2").append("<option value='" + item.province.id + "'>" + item.province.name + "/" + item.name + "</option>");
+                        })
+                    } else {
+                        alert(obj.message)
+                        location.href = 'login.html'
+                    }
+                },
+                error: function (response) {
+                    alert(response.status);
+                }
+            })
+        }
+    </script>
+    <script>
+        function countFreight2() {
+            var weight2 = $('#weight2').val()
+            var num2 = $('#num2').val()
+            var sentAddressId2 = $('#sentAddress2').val()
+            var deliveryAddressId2 = $('#deliveryAddress2').val()
+            var freight2 = document.getElementById('freight2')
+            console.log(weight2)
+            console.log(num2)
+            console.log(sentAddressId2)
+            console.log(deliveryAddressId2)
+            if (weight2 == null || weight2 == "") {
+                alert("请输入物品重量")
+                return
+            } else if (num2 == null || num2 == "") {
+                alert("物品数量")
+                return
+            } else if (sentAddressId2 == null || sentAddressId2 == "") {
+                alert("请选择寄件地址")
+                return
+            } else if (deliveryAddressId2 == null || deliveryAddressId2 == "") {
+                alert("请选择收件地址")
+                return
+            }
+            $.ajax({
+                url: "/package/freight/count?sentAddressId=" + sentAddressId2 + "&deliveryAddressId=" + deliveryAddressId2 + "&weight=" + weight2,
+                method: 'get',
+                headers: {"Content-Type": "application/json"},
+                success: function (obj, status) {
+                    console.log(obj)
+                    if (obj.code == 200) {
+                        console.log(freight2.innerText)
+                        freight2.innerHTML = obj.data * num2
+                        console.log(obj.data)
+                    } else {
+                        alert(obj.message)
+                    }
+                },
+                error: function (response) {
+                    alert(response.status);
+                }
+            })
+
+        }
+
+
+    </script>
+    <script>
+        function sendPackage() {
+            console.log("sendPackage")
+            var weight2 = $('#weight2').val()
+            var num2 = $('#num2').val()
+            var sentAddressId2 = $('#sentAddress2').val()
+            var deliveryAddressId2 = $('#deliveryAddress2').val()
+            var goodsName2 = $('#goodsName2').val()
+            var receiverId = $('#receiverId').val()
+            console.log("重量:" + weight2)
+            console.log("数量:" + num2)
+            console.log("寄送地址:" + sentAddressId2)
+            console.log("到达地址:" + deliveryAddressId2)
+            console.log("商品名称:" + goodsName2)
+            if (goodsName2 == null || goodsName2 == "") {
+                alert("请输入物品名称")
+                return
+            }
+            if (weight2 == null || weight2 == "") {
+                alert("请输入物品重量")
+                return
+            } else if (num2 == null || num2 == "") {
+                alert("请输入物品数量")
+                return
+            } else if (sentAddressId2 == null || sentAddressId2 == "") {
+                alert("请选择寄件地址")
+                return
+            } else if (deliveryAddressId2 == null || deliveryAddressId2 == "") {
+                alert("请选择收件地址")
+                return
+            }else if (receiverId == null || receiverId == "") {
+                alert("请输入收件人手机号")
+                return
+            }
+            $.ajax({
+                url: "/package/add",
+                method: 'post',
+                data: {
+                    sentAddressId: sentAddressId2,
+                    deliveryAddressId: deliveryAddressId2,
+                    num: num2,
+                    weight: weight2,
+                    goodsName: goodsName2,
+                    receiverId: receiverId
+                },
+                dataType: 'json',
+                headers: {"content-type": "application/x-www-form-urlencoded"},
+                success: function (obj, status) {
+                    console.log(obj)
+                    if (obj.code == 200) {
+                        $('#myModal2').modal('hide')
+                        alert("包裹添加成功，请时刻关注物流信息")
+                    } else {
+                        alert(obj.message)
+                    }
+                },
+                error: function (response) {
+                    alert(response.status);
+                }
+            })
+        }
+    </script>
+    <script>
+        function increaseNum2() {
+            var num2 = $('#num2').val()
+            num2 -= -1
+            $('#num2').val(num2)
+        }
+    </script>
+    <script>
+        function decreaseNum2() {
+            var num2 = $('#num2').val()
+            if (num2 == 1) {
+                $('#num2').val(1)
+                return
+            } else {
+                num2 -= 1
+                $('#num2').val(num2)
+            }
+        }
+    </script>
+    <script>
+        function searchPackage() {
+            var keyword = $('#keyword').val()
+            console.log(keyword)
+            window.location.href = "searchResult.html?keyword=" + keyword
+        }
+    </script>
+    <script>
+        function getUserIdByPhone() {
+            var receiverPhone = $('#receiverPhone').val()
+            $.ajax({
+                url: "/user/getIdByPhone?phone=" + receiverPhone,
+                method: 'get',
+                success: function (obj, status) {
+                    console.log(obj)
+                    if (obj.code == 200) {
+                        //alert("收件人手机号正确")
+
+                        document.getElementsByName("receiverId")[0].value = obj.data
+
+                    } else {
+                        alert("请输入正确的收件人手机号")
+                    }
+                },
+                error: function (response) {
+                    alert(response.status);
+                }
+            })
+        }
+    </script>
+
+    <script>
+        $.ajax({
+            url: "/user/info",
+            method: 'get',
+            headers: {"Content-Type": "application/json"},
+            success: function (obj, status) {
+                if (obj.code == 200) {
+                    console.log(obj.data)
+                    document.getElementById('userInfo').innerHTML = obj.data.account
+                    //document.getElementById('userInfo2').innerHTML=obj.data.account
+                    if (obj.data.type == 0) {
+                        $('#userHeader').css("display", "")
+                        $('#userHeader2').css("display", "none")
+
+                        $('#userLogo').css("display", "")
+                        $('#userLogo2').css("display", "none")
+                    } else if (obj.data.type == 1) {
+                        $('#userHeader').css("display", "none")
+                        $('#userHeader2').css("display", "")
+                        $('#userLogo').css("display", "none")
+                        $('#userLogo2').css("display", "")
+                    }
+                } else {
+                    alert(obj.message)
+                    location.href = 'login.html'
+                }
+            },
+            error: function (response) {
+                alert(response.status);
+            }
+        })
+    </script>
+
+
+
+</div>

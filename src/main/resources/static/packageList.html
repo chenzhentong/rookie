@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>寄/取件记录</title>
+    <link rel="stylesheet" type="text/css" href="css/mainBody.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+</head>
+<body>
+<div class="headpage"></div>
+<div class="mainBody">
+    <div class="table-responsive">
+        <table class="table" id="table1">
+            <caption>寄件记录
+                <span id="sentPackagesSize"></span></caption>
+            <thead id="thead1">
+            <tr>
+                <th>寄件时间</th>
+                <th>到达时间</th>
+                <th>取件时间</th>
+                <th>寄件地址</th>
+                <th>收件地址</th>
+                <th>发送人</th>
+                <th>接收人</th>
+                <th>投递人</th>
+                <th>物品名称</th>
+                <th>重量/kg</th>
+                <th>运费/元</th>
+                <th>物流信息</th>
+            </tr>
+            </thead>
+            <tbody id="tbody1">
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive">
+        <table class="table" id="table2">
+            <caption>取件记录
+            <span id="receivedPackagesSize"></span></caption>
+            <thead id="thead2">
+            <tr>
+                <th>寄件时间</th>
+                <th>到达时间</th>
+                <th>取件时间</th>
+                <th>寄件地址</th>
+                <th>收件地址</th>
+                <th>发送人</th>
+                <th>接收人</th>
+                <th>投递人</th>
+                <th>物品名称</th>
+                <th>重量/kg</th>
+                <th>运费/元</th>
+                <th>物流信息</th>
+            </tr>
+            </thead>
+            <tbody id="tbody2">
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="logisticsModal" tabindex="-1" role="dialog" aria-labelledby="myLogisticsModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 800px; position: relative;left: -11%;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">×
+                    </button>
+                    <h4 class="modal-title" id="myLogisticsModalLabel">
+                        物流信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table" id="table3">
+                        <caption><span id="sentPackagesSize3"></span></caption>
+                        <thead id="thead3">
+                        <tr>
+                            <th>创建时间</th>
+                            <th>更新时间</th>
+                            <th>消息</th>
+                            <th>包裹号</th>
+                            <th>已读/未读</th>
+                            <th>设置已读/未读</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody3">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footpage"></div>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script>
+    $(".headpage").load("header.html");
+    $(".footpage").load("footer.html");
+
+</script>
+<script>
+    window.senderNotViewedMessageNum = 0
+    window.receiverNotViewedMessageNum = 0
+</script>
+
+<script>
+    function getLogistics(logisticsList){
+        var tbody3 = document.getElementById('tbody3')
+        document.getElementById('sentPackagesSize3').innerText = "  当前包裹有" +  logisticsList.length + "条物流消息"
+        while(tbody3.hasChildNodes()) //当div下还存在子节点时 循环继续
+        {
+            tbody3.removeChild(tbody3.firstChild);
+        }
+        logisticsList.forEach(function (item,index) {
+            var viewed
+            if (item.isViewed) {
+                viewed = '已读'
+            } else {
+                viewed = '未读'
+            }
+            if (item.isViewed) {
+                item.setViewed = '设置未读'
+            } else {
+                item.setViewed = '设置已读'
+            }
+
+            var str = "<tr><td>"
+                + item.createDate + "</td> <td>"
+                + item.updateDate + "</td> <td>"
+                + item.message + "</td> <td>"
+                + item.packageId + "</td><td>"+viewed+"</td><td><button type=\"button\" class=\"btn btn-primary\" " +
+                "data-toggle=\"modal\" data-target=\"#logisticsModal\"" +
+                "onclick='setViewed(" + JSON.stringify(item) + ")'>"+item.setViewed+"</button></td></tr>"
+            $('#tbody3').append(str)
+        })
+    }
+</script>
+
+<script>
+    $.ajax({
+        url: "/package/receiver",
+        method: 'get',
+        headers: {"Content-Type": "application/json"},
+        success: function (obj, status) {
+            console.log(obj)
+            if (obj.code == 401) {
+                location.href = 'login.html'
+            } else if (obj.code == 200){
+                console.log(1)
+                obj.data.forEach(function (item,index){
+                    var state = ""
+                    var sendDate = ""
+                    var arriveDate = ""
+                    var takeDate = ""
+                    switch (item.state) {
+                        case 0:
+                            state = "揽收中"
+                            sendDate = item.sendDate
+                            break;
+                        case 1:
+                            state = "运输中"
+                            sendDate = item.sendDate
+
+                            break;
+                        case 2:
+                            state = "待取件"
+                            sendDate = item.sendDate
+
+                            arriveDate = item.arriveDate
+                            break;
+                        case 3:
+                            state = "已签收"
+                            sendDate = item.sendDate
+
+                            arriveDate = item.arriveDate
+                            takeDate = item.takeDate
+                            break;
+                        default:
+                            state = ""
+                            break;
+                    }
+                    console.log("item.logisticsList:" + index)
+                    console.log(item.logisticsList)
+                    item.logisticsList.forEach(function (item,index) {
+
+                        if (item.isViewed) {
+
+                        } else {
+
+                            window.receiverNotViewedMessageNum = window.receiverNotViewedMessageNum + 1
+                        }
+                    })
+
+                    $("#tbody2").append("<tr><td>"+sendDate +"</td><td>"
+                        + arriveDate+ "</td> <td>"
+                        + takeDate+ "</td> <td>"
+                        + item.sendAddress.name+ "</td> <td>"
+                        + item.deliveryAddress.name+ "</td> <td>"
+                        + item.sender.name + "</td> <td>"
+                        + item.receiver.name + "</td> <td>"
+                        + item.deliver.name + "</td> <td>"
+                        +item.ordersDetail.goods.name+"</td> <td>"
+                        +item.ordersDetail.goods.weight+"</td><td>"
+                        +item.freight+"</td><td>" +
+                        "<button type=\"button\" class=\"btn btn-primary\" " +
+                        "data-toggle=\"modal\" data-target=\"#logisticsModal\"" +
+                        "onclick='getLogistics("+JSON.stringify(item.logisticsList)+")'>查看物流</button></td></tr>")
+
+                })
+                console.log("receiverNotViewedMessageNum:" +window.receiverNotViewedMessageNum)
+                $('#receivedPackagesSize').html(obj.data.length + "条," + window.receiverNotViewedMessageNum + "条未读消息")
+            } else {
+                alert(obj.message)
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+
+        }
+    })
+
+</script>
+<script>
+    $.ajax({
+        url: "/package/sender",
+        method: 'get',
+        headers: {"Content-Type": "application/json"},
+        success: function (obj, status) {
+            console.log(obj)
+            if (obj.code == 401) {
+                alert(obj.message)
+                location.href = 'login.html'
+            } else if (obj.code == 200){
+                obj.data.forEach(function (item,index){
+                    console.log("item.logisticsList:" + index)
+                    console.log(item.logisticsList)
+                    item.logisticsList.forEach(function (item,index) {
+                        if (item.isViewed) {
+                        } else {
+                            window.senderNotViewedMessageNum = window.senderNotViewedMessageNum + 1
+                        }
+                    })
+                    $("#tbody1").append("<tr><td>"+item.sendDate +"</td><td>"
+                        + item.arriveDate+ "</td> <td>"
+                        + item.takeDate+ "</td> <td>"
+                        + item.sendAddress.name+ "</td> <td>"
+                        + item.deliveryAddress.name+ "</td> <td>"
+                        + item.sender.name + "</td> <td>"
+                        + item.receiver.name + "</td> <td>"
+                        + item.deliver.name + "</td> <td>"
+                        +item.ordersDetail.goods.name+"</td> <td>"
+                        +item.ordersDetail.goods.weight+"</td><td>"
+                        +item.freight+"</td><td>" +
+                        "<button type=\"button\" class=\"btn btn-primary\" " +
+                        "data-toggle=\"modal\" data-target=\"#logisticsModal\"" +
+                        "onclick='getLogistics("+JSON.stringify(item.logisticsList)+")'>查看物流</button></td></tr>")
+                })
+                console.log("senderNotViewedMessageNum:" +window.senderNotViewedMessageNum)
+                $('#sentPackagesSize').html(obj.data.length + "条" + window.senderNotViewedMessageNum + "条未读消息")
+            } else {
+                alert(obj.message)
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+        }
+    })
+
+</script>
+<script>
+    function setViewed(item){
+        console.log(item)
+        $.ajax({
+            url: "/logistics/update",
+            type: 'POST',
+            data: JSON.stringify({
+                id: item.id,
+                isViewed: !item.isViewed
+            }),
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (obj, status) {
+                console.log(obj)
+                if (obj.code == 200) {
+                    alert("设置成功")
+                    location.href='packageList.html'
+                } else {
+                    alert(obj.message)
+                    location.href = 'login.html'
+                }
+            },
+            error: function (response) {
+                alert(response.status);
+            }
+        })
+    }
+</script>
+</body>
+</html>

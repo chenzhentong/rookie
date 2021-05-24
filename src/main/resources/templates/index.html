@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<title>KEZI取件</title>
+		<link rel="stylesheet" type="text/css" href="css/mainBody.css"/>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+		<link rel="stylesheet" type="text/css" href="css/login.css"/>
+		<link rel="stylesheet" type="text/css" href="css/header.css"/>
+		<link rel="stylesheet" type="text/css" href="css/footer.css"/>
+	</head>
+	<body>
+		<div class="headpage"></div>
+		<div class="mainBody">
+			<div class="top1">
+				<div class="b4">
+
+					<div class="b4-son">
+						<div class="b4-btn">
+							<img src="img/mail.png"/>
+							<h4>寄快递</h4>
+							<span class="caret"></span>
+							<div class="dropdown">
+<!--								<div class="down">-->
+									<ul>
+									<li><a href="https://www.sf-express.com/cn/sc/dynamic_function/order/quick/"> 顺丰</a></li>
+									<li><a href="https://my.zto.com/create">中通</a></li>
+									<li><a href="http://membernew.yundasys.com:15116/member.website/hywz/view/shipping.html">韵达</a></li>
+									<li><a href="http://www.800bestex.com/order/create">百世</a></li>
+									<li><a href="https://www.ems.com.cn/pc/main/new/#/order/v2/index"> 邮政</a></li>
+								</ul>
+<!--								</div>-->
+
+							</div>
+						</div>
+					</div>
+
+
+					<div class="b4-son">
+						<div class="b4-btn" id = "demo" onclick = " getSum() ">
+							<img src="img/freight.png"/>
+							<h4>运费估算</h4>
+						</div>
+					</div>
+					<div class="b4-son">
+						<div class="b4-btn">
+							<img src="img/IDcode.png"/>
+							<h4>身份码</h4>
+						</div>
+					</div>
+					<div class="b4-son">
+						<div class="b4-btn">
+							<img src="img/record.png"/>
+							<h4>取/寄件记录</h4>
+						</div>
+					</div>
+				</div>
+				<div class="b1">
+					<input type="text" class="searchBox" placeholder="请输入快递单号/取货码/手机号码" />
+					<button class="btn btn-searchButton" onclick="search()">搜索</button>
+				</div>
+			</div>
+			<div class="b2">
+				<div class="b2-btn">
+					<button class="btn btn-link">更多产品 ></button>
+				</div>
+				<div class="b2-son">
+					<img src="img/b2-1.jpg"/>
+					<div class="b2-son-info">
+						<h3>当天达</h3>
+						<p>最快8小时，承诺12小时内送达，1小时上门取件</p>
+					</div>
+				</div>
+				<div class="b2-son">
+					<img src="img/b2-2.jpg"/>
+					<div class="b2-son-info">
+						<h3>次日达</h3>
+						<p>最快16小时，承诺24小时内送达，1小时上门取件</p>
+					</div>
+				</div>
+				<div class="b2-son">
+					<img src="img/b2-3.jpg"/>
+					<div class="b2-son-info">
+						<h3>隔日达</h3>
+						<p>最快36小时，最慢不超过48小时</p>
+					</div>
+				</div>
+				<div class="b2-son">
+					<img src="img/b2-4.jpg"/>
+					<div class="b2-son-info">
+						<h3>生鲜冷链</h3>
+						<p>KEZI运生鲜，保时又保鲜</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footpage"></div>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script>
+
+			window.onload = function (){
+				$.ajax({
+					url: "/index",
+					method: 'get',
+					headers: {"Content-Type": "application/json"},
+
+					success: function (obj, status) {
+						console.log(obj)
+						if (obj.code == 200) {
+							console.log(obj.message)
+							console.log(obj.data)
+						} else {
+							alert(obj.message)
+						}
+					},
+					error: function (response) {
+						alert(response.status);
+					}
+				})
+			}
+		</script>
+<!--		<script type="text/javascript">-->
+<!--			function getSum(){-->
+<!--				let uweight = prompt(`请输入快递重量（公斤）。`);-->
+<!--				// document.getElementById("demo").innerHTML = uweight ;-->
+<!--				if (uweight <= 1){-->
+<!--					document.write = alert(`您的快递重量为${uweight}公斤，预计运费为8元。`)-->
+<!--				} else {-->
+<!--					function getSpend (x,y) {-->
+<!--						let num1 = x;-->
+<!--						let num2 =Math.ceil (uweight) * y - y ;-->
+<!--						let result = num1 + num2;-->
+<!--						// result Math.ceil = 8 + (uweight-1) *4 ;-->
+<!--						document.write = alert(`您的快递重量为${uweight}公斤，预计运费为${result}元。`)-->
+<!--					}-->
+<!--					getSpend(8,4)-->
+<!--				}-->
+<!--			}-->
+<!--			getSum()-->
+
+<!--		</script>-->
+		<script type="text/javascript">
+			$(".headpage").load("header.html");
+			$(".footpage").load("footer.html");
+			function search(){
+				var numb = $('.searchBox').val();
+				if(numb == '12345678'){
+					window.location.href = 'searchResult.html';
+				}
+			}
+		</script>
+	</body>
+</html>

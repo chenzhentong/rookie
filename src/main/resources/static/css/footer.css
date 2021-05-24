@@ -1,0 +1,30 @@
+.footer{
+	height: 380px;
+	padding: 0 150px 0 150px;
+	margin-top: 5px;
+	background-color: #333333;
+	font-size: 18px;
+	color: white;
+}
+a{  
+	color: #C0C0C0;
+	font-size: 14px;
+}
+
+.f1{
+	height: 260px;
+}
+.f1-son{
+	height: 260px;
+	width: 16.666%;
+	padding-top: 50px;
+	text-align: center;
+	float: left;
+}
+
+.f2{
+	height: 120px;
+	font-size: 12px;
+	text-align: center;
+	color: #CCCCCC;
+}

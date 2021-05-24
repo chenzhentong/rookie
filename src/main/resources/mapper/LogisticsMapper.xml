@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.wkz.rookie.dao.LogisticsDao">
+
+
+    <select id="selectLogisticsByPackageId" resultMap="LogisticsResultMap" parameterType="Integer">
+        select *
+        from logistics
+        where packageId = #{packageId}
+    </select>
+
+    <select id="selectLogisticsByCriteria" resultMap="LogisticsResultMap" parameterType="LogisticsSearchCriteria">
+        select * from logistics where 1=1
+        <if test="packageId != null">
+            and packageId = #{packageId}
+        </if>
+    </select>
+
+    <insert id="addLogistics" parameterType="Logistics">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into logistics(message,packageId) values(#{message},#{packageId})
+    </insert>
+
+
+    <update id="updateLogistics" parameterType="Logistics">
+        update logistics set id = #{id}
+        <if test="message!=null">
+            ,message = #{message}
+        </if>
+        <if test="isViewed!=null">
+            ,isViewed = #{isViewed}
+        </if>
+        where id = #{id}
+    </update>
+    <resultMap id="LogisticsResultMap" type="Logistics">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="message" property="message" jdbcType="VARCHAR"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="isViewed" property="isViewed" jdbcType="BOOLEAN"/>
+        <!--        <association property="aPackage" column="packageId" select="per.wkz.rookie.dao.PackageDao.getPackageDetailById"/>-->
+    </resultMap>
+
+
+</mapper>

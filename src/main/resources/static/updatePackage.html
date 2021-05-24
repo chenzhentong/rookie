@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>更新包裹信息</title>
+</head>
+<body>
+
+<button onclick="updatePackage()">更新包裹</button>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script>
+    function updatePackage()
+    {
+        $.ajax({
+            url: "/package/update",
+            type: 'POST',
+            data: JSON.stringify({
+                id: 17,
+                state: 3,
+                sendDate: new Date(),
+                preArriveDate: new Date(),
+                arriveDate: new Date(),
+                takeDate: new Date()
+            }),
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (obj, status) {
+                console.log(obj)
+                if (obj.code == 200) {
+                    console.log(obj.message)
+
+                } else {
+                    alert(obj.message)
+                    location.href = 'login.html'
+                }
+            },
+            error: function (response) {
+                alert(response.status);
+            }
+        })
+    }
+</script>
+</body>
+</html>

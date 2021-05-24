@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>走进KEZI</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+</head>
+<body>
+    <div class="headpage"></div>
+
+    <div style="background-color: #0f0f0f;color: #ffffff;height: 600px">
+
+        走进KEZI
+    </div>
+    <div class="footpage"></div>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript">
+        $(".headpage").load("header.html");
+        $(".footpage").load("footer.html");
+        function search(){
+            var numb = $('.searchBox').val();
+            if(numb == '12345678'){
+                window.location.href = 'searchResult.html';
+            }
+        }
+    </script>
+</body>
+</html>

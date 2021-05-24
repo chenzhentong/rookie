@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.wkz.rookie.dao.ProvinceDao">
+
+    <select id="getAllProvinces" resultMap="ProvinceResultMap">
+        select * from province
+    </select>
+    <select id="getProvinceById" resultMap="ProvinceResultMap">
+        select * from province where id = #{id} limit 1
+    </select>
+    <resultMap id="ProvinceResultMap" type="Province">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="firstWeight" property="firstWeight" jdbcType="DOUBLE"/>
+        <result column="firstWeightFee" property="firstWeightFee" jdbcType="DOUBLE"/>
+        <result column="additionalWeightFee" property="additionalWeightFee" jdbcType="DOUBLE"/>
+        <result column="firstWeight2" property="firstWeight2" jdbcType="DOUBLE"/>
+        <result column="firstWeightFee2" property="firstWeightFee2" jdbcType="DOUBLE"/>
+        <result column="additionalWeightFee2" property="additionalWeightFee2" jdbcType="DOUBLE"/>
+    </resultMap>
+
+</mapper>

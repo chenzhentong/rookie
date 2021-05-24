@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>KEZI取件</title>
+    <link rel="stylesheet" type="text/css" href="css/mainBody.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/login.css"/>
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+</head>
+<body>
+<div class="headpage"></div>
+<div class="mainBody">
+    <table class="table" id="table1">
+        <caption>待揽收的件
+            <span id="notDeliveryedPackagesSize"></span></caption>
+        <thead id="thead1">
+        <tr>
+            <th>寄件时间</th>
+<!--            <th>预计送达时间</th>-->
+            <th>到达时间</th>
+            <th>取件时间</th>
+            <th>寄件地址</th>
+            <th>收件地址</th>
+            <th>接收者</th>
+            <th>物品名称</th>
+            <th>重量/kg</th>
+            <th>运费/元</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tbody1">
+        </tbody>
+    </table>
+    <table class="table" id="table2">
+        <caption>已经揽收的件
+            <span id="deliveryedPackagesSize"></span></caption>
+        <thead id="thead2">
+        <tr>
+            <th>寄件时间</th>
+
+            <th>到达时间</th>
+            <th>取件时间</th>
+            <th>寄件地址</th>
+            <th>收件地址</th>
+            <th>接收者</th>
+            <th>物品名称</th>
+            <th>重量/kg</th>
+            <th>运费/元</th>
+            <th>状态</th>
+            <th>更新物流</th>
+        </tr>
+        </thead>
+        <tbody id="tbody2">
+        </tbody>
+    </table>
+    <div class="modal fade" id="logisticsModal" tabindex="-1" role="dialog" aria-labelledby="myLogisticsModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">×
+                    </button>
+                    <h4 class="modal-title" id="myLogisticsModalLabel">
+                        更新物流信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                   <form >
+                       <div class="form-group">
+                           <input name="logisticsPackageId" id="logisticsPackageId" type="hidden" class="form-control">
+                       </div>
+                      <div class="form-group">
+                          <label class="control-label" for="logisticsMessage">物流消息</label>
+                          <input name="logisticsMessage" id="logisticsMessage" type="text" class="form-control">
+                      </div>
+                       <div class="form-group">
+                           <label  class="control-label" for="logisticsPackageState">物流状态</label>
+                           <select id="logisticsPackageState" name="logisticsPackageState" class="form-control">
+                               <option value="1">运输中</option>
+                               <option value="2">待取件</option>
+                               <option value="3">已签收</option>
+                           </select>
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-default"
+                                   data-dismiss="modal">关闭
+                           </button>
+                       <button type="button" class="btn btn-primary" onclick="updateLogistics()">
+                           更新物流信息
+                       </button>
+                       </div>
+                   </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footpage"></div>
+
+</body>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(".headpage").load("header.html");
+    $(".footpage").load("footer.html");
+</script>
+<script>
+    $.ajax({
+        url: "/package/notDeliveryed",
+        method: 'get',
+        success: function (obj, status) {
+            if (obj.code == 200) {
+                console.log(obj.data)
+                obj.data.forEach(function (item, index) {
+                    var state = ""
+                    var sendDate = ""
+                    var arriveDate = ""
+                    var takeDate = ""
+                    var preArriveDate = ""
+                    switch (item.state) {
+                        case 0:
+                            state = "揽收中"
+                            sendDate = item.sendDate
+                            break;
+                        case 1:
+                            state = "运输中"
+                            sendDate = item.sendDate
+                            preArriveDate = item.preArriveDate
+                            break;
+                        case 2:
+                            state = "待取件"
+                            sendDate = item.sendDate
+                            preArriveDate = item.preArriveDate
+                            arriveDate = item.arriveDate
+                            break;
+                        case 3:
+                            state = "已签收"
+                            sendDate = item.sendDate
+                            preArriveDate = item.preArriveDate
+                            arriveDate = item.arriveDate
+                            takeDate = item.takeDate
+                            break;
+                        default:
+                            state = ""
+                            break;
+                    }
+                    $("#tbody1").append("<tr><td>" + sendDate + "</td><td>"
+                        // + preArriveDate + "</td> <td>"
+                        + arriveDate + "</td> <td>"
+
+                        + takeDate + "</td> <td>"
+                        + item.sendAddress.name + "</td> <td>"
+                        + item.deliveryAddress.name + "</td> <td>"
+                        + item.sender.name + "</td> <td>"
+                        + item.ordersDetail.goods.name + "</td> <td>"
+                        + item.ordersDetail.goods.weight + "</td><td>"
+                        + item.freight + "</td><td>"+state +"</td><td>" +
+                        "<button type=\"button\" class=\"btn btn-primary\" " +
+                        "data-toggle=\"modal\" data-target=\"#logisticsModal\"" +
+                        "onclick='goUpdateLogistics("+JSON.stringify(item)+")'>揽件</button></td></tr>")
+                })
+                document.getElementById('notDeliveryedPackagesSize').innerHTML = obj.data.length + "件"
+            } else {
+                alert(obj.message)
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+        }
+    })
+
+</script>
+<script>
+    $.ajax({
+        url: "/package/deliver",
+        method: 'get',
+        success: function (obj, status) {
+            if (obj.code == 401) {
+                alert(obj.message)
+                location.href='login.html'
+            } else if (obj.code == 200) {
+                console.log(obj.data)
+                obj.data.forEach(function (item, index) {
+                    var state = ""
+                    var sendDate = ""
+                    var arriveDate = ""
+                    var takeDate = ""
+                    var preArriveDate = ""
+                    switch (item.state) {
+                        case 0:
+                            state = "揽收中"
+                            sendDate = item.sendDate
+                            break;
+                        case 1:
+                            state = "运输中"
+                            preArriveDate = item.preArriveDate
+                            sendDate = item.sendDate
+                            break;
+                        case 2:
+                            state = "待取件"
+                            sendDate = item.sendDate
+                            preArriveDate = item.preArriveDate
+                            arriveDate = item.arriveDate
+                            break;
+                        case 3:
+                            state = "已签收"
+                            sendDate = item.sendDate
+                            preArriveDate = item.preArriveDate
+                            arriveDate = item.arriveDate
+                            takeDate = item.takeDate
+                            break;
+                        default:
+                            state = ""
+                            break;
+                    }
+                    $("#tbody2").append("<tr><td>" + sendDate + "</td><td>"
+                        // + preArriveDate + "</td> <td>"
+                        + arriveDate + "</td> <td>"
+                        + takeDate + "</td> <td>"
+                        + item.sendAddress.name + "</td> <td>"
+                        + item.deliveryAddress.name + "</td> <td>"
+                        + item.sender.name + "</td> <td>"
+                        + item.ordersDetail.goods.name + "</td> <td>"
+                        + item.ordersDetail.goods.weight + "</td><td>"
+                        + item.freight + "</td><td>"+state +"</td><td>" +
+                        "<button type=\"button\" class=\"btn btn-primary\" " +
+                        "data-toggle=\"modal\" data-target=\"#logisticsModal\"" +
+                        "onclick='goUpdateLogistics("+JSON.stringify(item)+")'>更新物流</button></td></tr>")
+
+                })
+                document.getElementById('deliveryedPackagesSize').innerHTML = obj.data.length + "件"
+            } else {
+                alert(obj.message)
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+        }
+    })
+</script>
+<script>
+    function goUpdateLogistics(package){
+        console.log(package.id)
+        console.log(package.state)
+        $('#logisticsPackageId').val(package.id)
+        $("#logisticsPackageState").val(package.state);
+    }
+</script>
+<script>
+    function updateLogistics(){
+        var packageId = $('#logisticsPackageId').val()
+        var logisticsPackageState = $('#logisticsPackageState').val()
+        var logisticsMessage = $("#logisticsMessage").val()
+        console.log(packageId)
+        console.log(logisticsPackageState)
+        console.log(logisticsMessage)
+        if (logisticsMessage==null|| logisticsMessage == "") {
+            alert("请输入物流信息")
+            return
+        }
+        $.ajax({
+            url: "/logistics/add",
+            type: 'POST',
+            data: JSON.stringify({
+                packageId: packageId,
+                packageState: logisticsPackageState,
+                message: logisticsMessage
+            }),
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (obj, status) {
+                console.log(obj)
+                if (obj.code == 200) {
+                   alert(obj.message)
+                } else {
+                    alert(obj.message)
+                    location.href = 'login.html'
+                }
+            },
+            error: function (response) {
+                alert(response.status);
+            }
+        })
+    }
+</script>
+<script>
+    $.ajax({
+        url: "/user/info",
+        method: 'get',
+        headers: {"Content-Type": "application/json"},
+        success: function (obj, status) {
+
+            if (obj.code == 200) {
+                console.log(obj.data)
+                document.getElementById('userInfo').innerHTML = obj.data.account
+                //document.getElementById('userInfo2').innerHTML=obj.data.account
+                if (obj.data.type == 0) {
+                    $('#userHeader').css("display", "")
+                    $('#userHeader2').css("display", "none")
+
+                    $('#userLogo').css("display", "")
+                    $('#userLogo2').css("display", "none")
+                } else if (obj.data.type == 1) {
+                    $('#userHeader').css("display", "none")
+                    $('#userHeader2').css("display", "")
+                    $('#userLogo').css("display", "none")
+                    $('#userLogo2').css("display", "")
+                }
+            } else {
+                alert(obj.message)
+                location.href = 'login.html'
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+        }
+    })
+
+
+</script>
+</html>

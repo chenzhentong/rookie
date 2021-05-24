@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.wkz.rookie.dao.PackageDao">
+
+
+
+    <update id="updatePackage" parameterType="Package">
+        update package set id = #{id}
+        <if test="state!=null">
+            ,state = #{state}
+        </if>
+        <if test="sendDate!=null">
+            ,sendDate = #{sendDate}
+        </if>
+
+        <if test="arriveDate!=null">
+            ,arriveDate = #{arriveDate}
+        </if>
+        <if test="takeDate!=null">
+            ,takeDate = #{takeDate}
+        </if>
+        <if test="sendAddressId!=null">
+            ,sendAddressId = #{sendAddressId}
+        </if>
+        <if test="deliveryAddressId!=null">
+            ,deliveryAddressId = #{deliveryAddressId}
+        </if>
+        <if test="senderId!=null">
+            ,senderId = #{senderId}
+        </if>
+        <if test="receiverId!=null">
+            ,receiverId = #{receiverId}
+        </if>
+        <if test="deliverId!=null">
+            ,deliverId = #{deliverId}
+        </if>
+        where id = #{id}
+    </update>
+    <select id="getPackageByCriteria" resultMap="PackageDetailResultMap" parameterType="PackageSearchCriteria">
+        select * from package where 1=1
+        <if test="userId!=null">
+            and (senderId=#{userId} or receiverId=#{userId} )
+        </if>
+        <if test="packageId!=null">
+            and package.id = #{packageId}
+        </if>
+        <if test="senderPhone!=null">
+            and senderId = (select id from user where phone = #{senderPhone})
+        </if>
+        <if test="senderIDCard!=null">
+            and senderId = (select id from user where IDCard = #{senderIDCard})
+        </if>
+        <if test="deliverId!=null">
+            and deliverId =  #{deliverId}
+        </if>
+        <if test="isHasDeliveryed!=null">
+            and  deliverId is null;
+        </if>
+
+    </select>
+
+    <select id="getPackageDetailById" resultMap="PackageDetailResultMap">
+        select *
+        from package
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="getPackageById" resultMap="PackageResultMap">
+        select *
+        from package
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="getAllPackagesBySenderId" resultMap="PackageDetailResultMap">
+        select *
+        from package
+        where senderId = #{senderId}
+          and takeDate is true
+    </select>
+
+    <select id="getAllPackagesByReceiverId" resultMap="PackageDetailResultMap">
+        select *
+        from package
+        where receiverId = #{receiverId}
+          and takeDate is true
+    </select>
+
+    <insert id="addPackage" useGeneratedKeys="true" keyProperty="id">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into package(state,senderId,receiverId,
+        sendAddressId,deliveryAddressId,ordersdetailid,freight)
+        values (#{state,jdbcType=INTEGER},
+        #{senderId}, #{receiverId},
+        #{sendAddressId},#{deliveryAddressId}, #{ordersDetailId},#{freight,jdbcType=DOUBLE})
+    </insert>
+
+    <resultMap id="PackageResultMap" type="Package">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="sendDate" property="sendDate" jdbcType="TIMESTAMP"/>
+<!--        <result column="preArriveDate" property="preArriveDate" jdbcType="TIMESTAMP"/>-->
+        <result column="arriveDate" property="arriveDate" jdbcType="TIMESTAMP"/>
+        <result column="takeDate" property="takeDate" jdbcType="TIMESTAMP"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="PackageDetailResultMap" type="Package">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="sendDate" property="sendDate" jdbcType="TIMESTAMP"/>
+        <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP"/>
+<!--        <result column="preArriveDate" property="preArriveDate" jdbcType="TIMESTAMP"/>-->
+        <result column="arriveDate" property="arriveDate" jdbcType="TIMESTAMP"/>
+        <result column="takeDate" property="takeDate" jdbcType="TIMESTAMP"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="freight" property="freight" jdbcType="DOUBLE"/>
+        <association property="ordersDetail" column="ordersDetailId"
+                     select="per.wkz.rookie.dao.OrdersDetailDao.getOrdersDetailById"/>
+        <association property="sender" column="senderId" select="per.wkz.rookie.dao.UserDao.getUserById"/>
+        <association property="receiver" column="receiverId" select="per.wkz.rookie.dao.UserDao.getUserById"/>
+        <association property="deliver" column="deliverId" select="per.wkz.rookie.dao.UserDao.getUserById"/>
+        <association property="sendAddress" column="sendAddressId" select="per.wkz.rookie.dao.CityDao.getCityById"/>
+        <association property="deliveryAddress" column="deliveryAddressId"
+                     select="per.wkz.rookie.dao.CityDao.getCityById"/>
+        <collection property="logisticsList" column="id" select="per.wkz.rookie.dao.LogisticsDao.selectLogisticsByPackageId"/>
+    </resultMap>
+
+</mapper>

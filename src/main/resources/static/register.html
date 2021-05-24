@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrapValidator.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/login.css"/>
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+</head>
+<body class="gray-bg">
+<div class="headpage"></div>
+<div class="middle-box text-center">
+    <div>
+        <h2>KEZI取件系统用户注册</h2>
+        <form role="form" id="registerForm">
+            <div class="form-group">
+                <label for="account" class="control-label" style="display: flex">用户名</label>
+                <input  type="text" id="account" name="account" class="form-control"
+                       placeholder="用户名" required="true">
+            </div>
+
+            <div class="form-group">
+                <label for="userPassword" class="control-label"  style="display: flex">密码</label>
+                <input  type="password" id="userPassword" name="userPassword" class="form-control"
+                       placeholder="密码" required="true">
+            </div>
+
+            <div class="form-group">
+                <label for="userPassword2" class="control-label"  style="display: flex">重复密码</label>
+                <input  type="password" id="userPassword2" name="userPassword2" class="form-control"
+                       placeholder="重复密码" required="true">
+            </div>
+            <div class="form-group">
+                <label for="userName" class="control-label"  style="display: flex">姓名</label>
+                <input  type="text" id="userName" name="userName" class="form-control" placeholder="姓名"
+                       required="true">
+            </div>
+            <div class="form-group">
+                <label for="userPhone" class="control-label"  style="display: flex">手机号</label>
+                <input  type="phone" id="userPhone" name="userPhone" class="form-control"
+                       placeholder="手机号" required="false">
+            </div>
+
+            <div class="form-group">
+                <label for="userEmail" class="control-label"  style="display: flex">邮箱</label>
+                <input  type="email" id="userEmail" name="userEmail" class="form-control"
+                       placeholder="邮箱" required="false">
+            </div>
+
+            <div class="form-group">
+                <label class="control-label"  style="display: flex">用户类型</label>
+                <div >
+                    <label class="radio-inline">
+                        <input type="radio" name="userType" id="optionsRadios1" value="0" checked> 普通用户
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="userType" id="optionsRadios2" value="1"> 配送员
+                    </label>
+                </div>
+
+            </div>
+        </form>
+        <button id="submitRegister" type="submit" class=" tn btn-primary block  m-b">注册</button>
+		<button id="resetBtn" type="reset" class="btn-info">重置</button>
+        <a href="userInfo.html"><small>忘记密码</small></a>
+        <a href="login.html"><small>登录</small></a>
+    </div>
+</div>
+<div class="footpage"></div>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrapValidator.min.js"></script>
+<script type="text/javascript">
+    $(".headpage").load("headerBefore.html");
+    $(".footpage").load("footer.html");
+
+    function userRegister() {
+        var account = $('#account').val();
+        var userPassword = $('#userPassword').val();
+        var userName = $('#userName').val()
+        var userPhone = $('#userPhone').val()
+        var userEmail = $('#userEmail').val()
+        var userType = $("input[name='userType']:checked").val();
+
+        $.ajax({
+            url: "/user/register",
+            method: 'post',
+            data: JSON.stringify({
+                account: account,
+                password: userPassword,
+                type: userType,
+                email: userEmail,
+                phone: userPhone,
+                name: userName
+            }),
+            contentType: "application/json;charset=UTF-8",
+            success: function (obj, status) {
+                console.log(obj)
+                if (obj.code == 200) {
+                    console.log(obj.message)
+                    console.log(obj.data)
+                    if (obj.data.type == 0) {
+                        alert("注册成功，正在前往登录界面")
+                        location.href = "login.html"
+                    }
+                } else {
+                    alert(obj.message)
+                }
+            },
+            error: function (response) {
+                alert(response.status);
+            }
+        })
+
+    }
+</script>
+<script type="text/javascript">
+    $('#registerForm').bootstrapValidator({
+        //默认提示
+        message: 'This value is not valid',
+        // 表单框里右侧的icon
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        submitHandler: function (validator, form, submitButton) {
+
+        },
+        fields: {
+            account: {
+                message: '用户名验证失败',
+                validators: {
+                    notEmpty: {     //不能为空
+                        message: '用户名不能为空'
+                    },
+                    remote: {   //后台验证，比如查询用户名是否存在
+                    	url: 'user/account/verify',
+                    	message: '此用户名已存在',
+                        type: 'POST'
+
+                    }
+                }
+            },
+            userName: {
+                message: '姓名验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '姓名不能为空'
+                    }
+                }
+            },
+            userPhone: {
+                message: '电话号验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '电话号不能为空'
+                    },
+                    regexp: {   //正则验证
+                        regexp: /^1\d{10}$/,
+                        message: '请输入正确的电话号'
+                    }
+                }
+            },
+            userEmail: {
+                message: 'Email验证失败',
+                validators: {
+                    notEmpty: {
+                        message: 'Email不能为空'
+                    },
+                    emailAddress: {     //验证email地址
+                        message: '不是正确的email地址'
+                    }
+                }
+            },
+            userPassword: {
+                message: '密码验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '密码不能为空'
+                    }
+                },
+                stringLength: {     //检测长度
+                    min: 4,
+                    max: 15,
+                    message: '密码需要在4~15个字符'
+                }
+            },
+            userPassword2: {
+                message: '密码验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '密码不能为空'
+                    },
+                    identical: {    //与指定控件内容比较是否相同，比如两次密码不一致
+                        field: 'userPassword',//指定控件name
+                        message: '两次密码不一致'
+                    }
+                }
+            }
+        }
+    });
+</script>
+<script>
+	$('#submitRegister').click(function() {
+		$('#registerForm').bootstrapValidator('validate');
+		if ($("#registerForm").data('bootstrapValidator').isValid()) {   //获取验证结果，如果成功，执行下面代码
+			userRegister()
+		}
+	});
+</script>
+<script>
+	$('#resetBtn').click(function() {
+		$('#registerForm').data('bootstrapValidator').resetForm(true);
+	});
+</script>
+</body>
+</html>

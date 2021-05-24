@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>KEZI取件</title>
+    <link rel="stylesheet" type="text/css" href="css/mainBody.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/login.css"/>
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+<div class="headpage"></div>
+<div id="searchResult">
+    <div class="table-responsive">
+        <table class="table" id="table1">
+            <caption>搜索结果
+                <span id="searchedPackagesSize"></span></caption>
+            <thead id="thead1">
+            <tr>
+                <th>寄件时间</th>
+
+                <th>到达时间</th>
+                <th>取件时间</th>
+                <th>寄件地址</th>
+                <th>收件地址</th>
+                <th>发送人</th>
+                <th>接收人</th>
+                <th>投递人</th>
+                <th>物品名称</th>
+                <th>重量/kg</th>
+                <th>运费/元</th>
+                <th>状态</th>
+                <th>物流消息</th>
+            </tr>
+            </thead>
+            <tbody id="tbody1">
+
+            </tbody>
+        </table>
+    </div>
+    <div class="footpage"></div>
+    <div class="modal fade" id="logisticsModal" tabindex="-1" role="dialog" aria-labelledby="myLogisticsModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">×
+                    </button>
+                    <h4 class="modal-title" id="myLogisticsModalLabel">
+                        物流信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table" id="table3">
+                        <caption><span id="sentPackagesSize3"></span></caption>
+                        <thead id="thead3">
+                        <tr>
+                            <th>创建时间</th>
+                            <th>更新时间</th>
+                            <th>消息</th>
+                            <th>包裹号</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody3">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(".headpage").load("header.html");
+    $(".footpage").load("footer.html");
+</script>
+<script>
+    var TEL_REGEXP = /^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/
+
+    function validateTel(tel) {
+        if (TEL_REGEXP.test(tel)) {
+            return true;
+        }
+        return false;
+    }
+</script>
+<script>
+    var IDCarD_REGEXP = /^([1-6][1-9]|50)\d{4}(18|19|20)\d{2}((0[1-9])|10|11|12)(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+
+    function validateIDCard(IDCard) {
+        if (IDCarD_REGEXP.test(IDCard)) {
+            return true;
+        }
+        return false;
+    }
+</script>
+<script>
+    function getRequestParams() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    console.log(getRequestParams().keyword);
+    var keyword = getRequestParams().keyword
+    var phone = null
+    var packageId = null
+    var IDCard = null
+    var searchCriteria = "?"
+    if (validateIDCard(keyword)) {
+        //输入的是身份证号
+        IDCard = keyword
+        searchCriteria += "IDCard=" + IDCard
+    } else if (validateTel(keyword)) {
+        phone = keyword
+        searchCriteria += "phone=" + phone
+    } else {
+        packageId = keyword
+        searchCriteria += "packageId=" + packageId
+    }
+
+
+    $.ajax({
+        url: "/package/search" + searchCriteria,
+        method: 'get',
+        headers: {"Content-Type": "application/json"},
+        success: function (obj, status) {
+            console.log(obj)
+            console.log(obj.data)
+            if (obj.code == 200) {
+                // document.getElementById('searchResult').innerHTML = JSON.stringify(obj.data)
+                var items = obj.data
+                console.log(items)
+                if (obj.data.length == 0) {
+                    alert("未查询到相关的包裹信息")
+                }
+                items.forEach(function (item, index) {
+                    var state = ""
+                    var sendDate = ""
+                    var arriveDate = ""
+                    var takeDate = ""
+
+                    switch (item.state) {
+                        case 0:
+                            state = "揽收中"
+                            sendDate = item.sendDate
+                            break;
+                        case 1:
+                            state = "运输中"
+                            sendDate = item.sendDate
+
+                            break;
+                        case 2:
+                            state = "待取件"
+                            sendDate = item.sendDate
+
+                            arriveDate = item.arriveDate
+                            break;
+                        case 3:
+                            state = "已签收"
+                            sendDate = item.sendDate
+
+                            arriveDate = item.arriveDate
+                            takeDate = item.takeDate
+                            break;
+                        default:
+                            state = ""
+                            break;
+                    }
+                    $("#tbody1").append("<tr>" +
+                        "<td>" + sendDate + "</td><td>"
+                        + arriveDate + "</td> <td>"
+                        + takeDate + "</td> <td>"
+                        + item.sendAddress.name + "</td> <td>"
+                        + item.deliveryAddress.name + "</td> <td>"
+                        + item.sender.name + "</td> <td>"
+                        + item.receiver.name + "</td> <td>"
+                        + item.deliver.name + "</td> <td>"
+                        + item.ordersDetail.goods.name + "</td> <td>"
+                        + item.ordersDetail.goods.weight + "</td><td>"
+                        + item.freight + "</td><td>"
+                        + state + "</td><td><button type=\"button\" class=\"btn btn-primary\" " +
+                        "data-toggle=\"modal\" data-target=\"#logisticsModal\"" +
+                        "onclick='getLogistics(" + JSON.stringify(item.logisticsList) + ")'>查看物流</button></td>" +
+                        "</tr>"
+                    )
+                })
+                $('#searchedPackagesSize').html(obj.data.length + "条")
+            } else {
+                alert(obj.message)
+                location.href = "login.html"
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+        }
+    })
+</script>
+<script>
+    function getLogistics(logisticsList) {
+        var tbody3 = document.getElementById('tbody3')
+        document.getElementById('sentPackagesSize3').innerText = "  当前包裹有" + logisticsList.length + "条物流消息"
+        while (tbody3.hasChildNodes()) //当div下还存在子节点时 循环继续
+        {
+            tbody3.removeChild(tbody3.firstChild);
+        }
+        logisticsList.forEach(function (item, index) {
+            $('#tbody3').append("<tr><td>"
+                + item.createDate + "</td> <td>"
+                + item.updateDate + "</td> <td>"
+                + item.message + "</td> <td>"
+                + item.packageId + "</td></tr>")
+        })
+
+    }
+</script>
+
+
+</html>

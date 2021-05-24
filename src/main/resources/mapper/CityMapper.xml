@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.wkz.rookie.dao.CityDao">
+
+    <select id="getCityProvinceDetailById" resultMap="CityProvinceMap">
+        select * from city where id = #{id} limit 1
+    </select>
+
+    <select id="getCityById" resultMap="CityResultMap">
+        select * from city where id = #{id} limit 1
+    </select>
+
+    <select id="getAllCities"  resultMap="CityProvinceMap">
+        select * from city
+    </select>
+
+    <resultMap id="CityResultMap" type="City">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="CityProvinceMap" type="City">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <association property="province" column="provinceId" select="per.wkz.rookie.dao.ProvinceDao.getProvinceById"/>
+    </resultMap>
+
+
+</mapper>

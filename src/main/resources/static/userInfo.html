@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>用户信息</title>
+    <link rel="stylesheet" type="text/css" href="css/mainBody.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/login.css"/>
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+    <style>
+        /* Custom Styles */
+        ul.nav-tabs{
+            width: 140px;
+            margin-top: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+        }
+        ul.nav-tabs li{
+            margin: 0;
+            border-top: 1px solid #ddd;
+        }
+        ul.nav-tabs li:first-child{
+            border-top: none;
+        }
+        ul.nav-tabs li a{
+            margin: 0;
+            padding: 8px 16px;
+            border-radius: 0;
+        }
+        ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover{
+            color: #fff;
+            background: #0088cc;
+            border: 1px solid #0088cc;
+        }
+        ul.nav-tabs li:first-child a{
+            border-radius: 4px 4px 0 0;
+        }
+        ul.nav-tabs li:last-child a{
+            border-radius: 0 0 4px 4px;
+        }
+        ul.nav-tabs.affix{
+            top: 30px; /* Set the top position of pinned element */
+        }
+    </style>
+
+</head>
+<body>
+<div class="headpage"></div>
+<div class="mainBody">
+
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-xs-3" id="myScrollspy">
+                <ul class="nav nav-tabs nav-stacked" id="myNav">
+                    <li ><a href="#section-1">账号信息</a></li>
+                    <li><a href="#section-2">修改密码</a></li>
+                </ul>
+            </div>
+
+            <div class="col-xs-9">
+                <div class="col-xs-12" id="section-1">
+                    <div class="panel panel-default" >
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                账号信息
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <dl class="dl-horizontal">
+                                <dt>用户ID</dt>
+                                <dd><span id="userId"></span></dd>
+                                <dt>账号</dt>
+
+                                <dd><span id="account"></span></dd>
+                                <dt>姓名</dt>
+                                <dd><span id="name1"></span></dd>
+                                <dt>手机号</dt>
+                                <dd><span id="phone"></span></dd>
+                                <dt>身份证号</dt>
+                                <dd><span id="IDCard"></span></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12" id="section-2">
+                    <div class="panel panel-default" >
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                修改密码
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" role="form" >
+                                <div class="form-group">
+                                    <label for="password" class="col-sm-2 control-label">原密码</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="password"
+                                               placeholder="原密码">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password2" class="col-sm-2 control-label">再次输入原密码</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="password2"
+                                               placeholder="再次输入原密码">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword" class="col-sm-2 control-label">新密码</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="newPassword"
+                                               placeholder="再次输入原密码">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <input type="hidden" id="userId1">
+                                        <input type="hidden" class="form-control" id="password1">
+                                        <button type="submit" class="btn btn-default" onclick="modifyPassword()">确认修改</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footpage"></div>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(".headpage").load("header.html");
+    $(".footpage").load("footer.html");
+</script>
+<script>
+    $('#section-1').click(function (){
+        console.log("111")
+    })
+</script>
+<script>
+    $.ajax({
+        url: "/user/info",
+        method: 'get',
+        headers: {"Content-Type": "application/json"},
+        success: function (obj, status) {
+            if (obj.code == 200) {
+                document.getElementById('userInfo').innerHTML = obj.data.account
+                //document.getElementById('userInfo2').innerHTML=obj.data.account
+                if (obj.data.type == 0) {
+                    $('#userHeader').css("display", "")
+                    $('#userHeader2').css("display", "none")
+                    $('#userLogo').css("display", "")
+                    $('#userLogo2').css("display", "none")
+                } else if (obj.data.type == 1) {
+                    $('#userHeader').css("display", "none")
+                    $('#userHeader2').css("display", "")
+                    $('#userLogo').css("display", "none")
+                    $('#userLogo2').css("display", "")
+                }
+                $('#userId').html(obj.data.id)
+                $('#userId1').val(obj.data.id)
+                $('#password1').val(obj.data.password)
+                $('#account').html(obj.data.account)
+                $('#name1').html(obj.data.name)
+                $('#phone').html(obj.data.phone)
+                $('#IDCard').html(obj.data.idcard)
+            } else {
+                alert(obj.message)
+                location.href = 'login.html'
+            }
+        },
+        error: function (response) {
+            alert(response.status);
+        }
+    })
+
+</script>
+<script>
+    function modifyPassword(){
+        var password = $('#password').val();
+        var password2 = $('#password2').val();
+        var newPassword = $('#newPassword').val();
+        var userId = $('#userId1').val()
+
+        var truePassword = $('#password1').val()
+        console.log(password)
+        console.log(password2)
+        console.log(newPassword)
+        console.log(userId)
+        console.log(truePassword)
+        if (truePassword != password) {
+            alert("密码输入错误")
+            return
+        }
+        if (password2 != password) {
+            alert("两次密码不一致")
+            return
+        }
+
+        $.ajax({
+            url: "/user/password/update?newPassword=" + newPassword + "&userId=" + userId,
+            method: 'get',
+            headers: { "Content-Type": "application/json" },
+            success: function (obj, status) {
+                console.log(obj)
+                if (obj.code == 200) {
+                    alert(obj.message )
+
+                } else {
+                    alert(obj.message)
+                }
+            },
+            error: function (response) {
+                alert(response.status);
+            }
+        })
+    }
+</script>
+
+
+</body>
+</html>
